@@ -1,27 +1,24 @@
-﻿@model Vehicles2.Api.Data.Entities.VehicleType
+﻿@model Vehicles2.Api.Data.Entities.Procedure
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Create";
 }
 
-<h4>Editar Tipo de Vehículo</h4>
+<h4>Crear Nuevo Procedimiento</h4>
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Edit">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <partial name="_VehicleType" />
+
+            <partial name="_Procedure" />
+
             <div class="form-group">
-                <input type="submit" value="Guardar" class="btn btn-primary" />
+                <input type="submit" value="Crear" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-success">Regresar</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-
 </div>
 
 @section Scripts {

@@ -8,7 +8,10 @@ namespace Vehicles2.Api.Data
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
-
+        
+        public DbSet<Brand> Brands { get; set; }
+        public DbSet<DocumentType> DocumentTypes { get; set; }
+        public DbSet<Procedure> Procedures { get; set; }
         public DbSet<VehicleType> VehicleTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
