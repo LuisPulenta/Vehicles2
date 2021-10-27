@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Vehicles2.Api.Data.Entities;
 
 namespace Vehicles2.Api.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ProceduresController : Controller
     {
         private readonly DataContext _context;

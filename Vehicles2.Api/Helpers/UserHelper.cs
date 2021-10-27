@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Vehicles2.Api.Data;
 using Vehicles2.Api.Data.Entities;
+using Vehicles2.Api.Models;
 
-namespace Vehicles.Api.Helpers
+namespace Vehicles2.Api.Helpers
 {
     public class UserHelper : IUserHelper
     {
@@ -51,5 +52,16 @@ namespace Vehicles.Api.Helpers
         {
             return await _userManager.IsInRoleAsync(user, roleName);
         }
+
+        public async Task<SignInResult> LoginAsync(LoginViewModel model)
+        {
+            return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
+        }
+
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
+
     }
 }

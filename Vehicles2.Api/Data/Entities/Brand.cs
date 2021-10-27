@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Vehicles2.Api.Data.Entities
 {
@@ -13,5 +15,7 @@ namespace Vehicles2.Api.Data.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; }
 
+        [JsonIgnore]
+        public ICollection<Vehicle> Vehicles { get; set; }
     }
 }
