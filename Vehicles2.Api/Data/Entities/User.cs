@@ -39,7 +39,7 @@ namespace Vehicles2.Api.Data.Entities
         [Display(Name = "Foto")]
         public string ImageFullPath => string.IsNullOrEmpty(ImageId)
                      ? "https://localhost:44351/images/nouser.png"
-                    : $"https://localhost:44354{ImageId.Substring(1)}";
+                    : $"https://localhost:44351{ImageId.Substring(1)}";
         //: $"http://keypress.serveftp.net:88/Vehicles2Api/Images/users/{ImageId}";
         
         [Display(Name = "Tipo de usuario")]

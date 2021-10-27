@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Vehicles2.Api.Helpers;
 using Vehicles2.Api.Data;
 using Vehicles2.Api.Data.Entities;
+using Vehicles2.Common.Helpers;
 
 namespace Vehicles2.Api
 {
@@ -44,6 +45,10 @@ namespace Vehicles2.Api
             });
             services.AddTransient<SeedDb>();
             services.AddScoped<IUserHelper, UserHelper>();
+            services.AddScoped<ICombosHelper, CombosHelper>();
+            services.AddScoped<IImageHelper, ImageHelper>();
+            services.AddScoped<IFilesHelper, FilesHelper>();
+            services.AddScoped<IConverterHelper, ConverterHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
