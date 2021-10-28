@@ -17,6 +17,7 @@ namespace Vehicles2.Api.Data.Entities
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == string.Empty
             ? $"https://localhost:44351/images/noimage.png"
-            : $"http://keypress.serveftp.net:88/Vehicles2Api/Images/vehicles/{ImageId}";
+            : $"https://localhost:44351{ImageId.Substring(1)}";
+            //: $"http://keypress.serveftp.net:88/Vehicles2Api/Images/vehicles/{ImageId}";
     }
 }
