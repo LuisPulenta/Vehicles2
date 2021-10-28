@@ -28,6 +28,7 @@ namespace Vehicles2.Api.Data
             await CheckUserAsync("1010", "Luis", "Núñez", "luis@yopmail.com", "351 681 4963", "Espora 2052", UserType.Admin);
             await CheckUserAsync("2020", "Lionel", "Messi", "messi@yopmail.com", "311 322 4620", "París", UserType.User);
             await CheckUserAsync("3030", "Diego", "Maradona", "maradona@yopmail.com", "311 322 4620", "Villa Fiorito", UserType.User);
+            await CheckUserAsync("4040", "Pablo", "Lacuadri", "pablo@yopmail.com", "351 555 412234", "Villa Santa Ana", UserType.Admin);
 
         }
 
