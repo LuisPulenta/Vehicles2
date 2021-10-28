@@ -72,5 +72,61 @@ namespace Vehicles.Api.Controllers
             model.DocumentTypes = _combosHelper.GetComboDocumentTypes();
             return View(model);
         }
+
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            User user = await _userHelper.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            UserViewModel model = _converterHelper.ToUserViewModel(user);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(UserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                string imageId = model.ImageId;
+                if (model.ImageFile != null)
+                {
+                    imageId = await _imageHelper.UploadImageAsync(model.ImageFile, "users");
+                }
+
+                User user = await _converterHelper.ToUserAsync(model, imageId, false);
+                await _userHelper.UpdateUserAsync(user);
+                return RedirectToAction(nameof(Index));
+            }
+
+            model.DocumentTypes = _combosHelper.GetComboDocumentTypes();
+            return View(model);
+        }
+
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            User user = await _userHelper.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            await _userHelper.DeleteUserAsync(user);
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
 }

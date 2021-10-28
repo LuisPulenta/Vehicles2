@@ -21,5 +21,11 @@ namespace Vehicles2.Api.Helpers
 
         Task LogoutAsync();
 
+        Task<User> GetUserByIdAsync(string id);
+
+        Task<IdentityResult> UpdateUserAsync(User user);
+
+        Task<IdentityResult> DeleteUserAsync(User user);
+
     }
 }
