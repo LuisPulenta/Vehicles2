@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Vehicles2.Api.Data.Entities;
 using Vehicles2.Api.Models;
+using Vehicles2.Common.Enums;
 
 namespace Vehicles2.Api.Helpers
 {
@@ -27,5 +28,8 @@ namespace Vehicles2.Api.Helpers
 
         Task<IdentityResult> DeleteUserAsync(User user);
 
+        Task<User> AddUserAsync(AddUserViewModel model, string imageId, UserType userType);
+
+        Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword);
     }
 }

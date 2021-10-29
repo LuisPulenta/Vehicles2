@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Vehicles2.Api.Data;
 using Vehicles2.Api.Data.Entities;
 using Vehicles2.Api.Models;
+using Vehicles2.Common.Enums;
 
 namespace Vehicles2.Api.Helpers
 {
@@ -97,6 +98,39 @@ namespace Vehicles2.Api.Helpers
         {
             return await _userManager.DeleteAsync(user);
         }
+
+        public async Task<User> AddUserAsync(AddUserViewModel model, string imageId, UserType userType)
+        {
+            User user = new User
+            {
+                Address = model.Address,
+                Document = model.Document,
+                Email = model.Username,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                ImageId = imageId,
+                PhoneNumber = model.PhoneNumber,
+                DocumentType = await _context.DocumentTypes.FindAsync(model.DocumentTypeId),
+                UserName = model.Username,
+                UserType = userType
+            };
+
+            IdentityResult result = await _userManager.CreateAsync(user, model.Password);
+            if (result != IdentityResult.Success)
+            {
+                return null;
+            }
+
+            User newUser = await GetUserAsync(model.Username);
+            await AddUserToRoleAsync(newUser, user.UserType.ToString());
+            return newUser;
+        }
+
+        public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+        }
+
 
     }
 }
