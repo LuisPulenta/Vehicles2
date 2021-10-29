@@ -150,5 +150,11 @@ namespace Vehicles2.Api.Helpers
         {
             return await _userManager.ResetPasswordAsync(user, token, password);
         }
+
+        public async Task<SignInResult> ValidatePasswordAsync(User user, string password)
+        {
+            return await _signInManager.CheckPasswordSignInAsync(user, password, false);
+        }
+
     }
 }

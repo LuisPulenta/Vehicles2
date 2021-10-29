@@ -9,6 +9,8 @@ using Vehicles2.Api.Helpers;
 using Vehicles2.Api.Data;
 using Vehicles2.Api.Data.Entities;
 using Vehicles2.Common.Helpers;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Vehicles2.Api
 {
@@ -40,6 +42,20 @@ namespace Vehicles2.Api
             })
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<DataContext>();
+
+            services.AddAuthentication()
+            .AddCookie()
+            .AddJwtBearer(cfg =>
+            {
+                cfg.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = Configuration["Tokens:Issuer"],
+                    ValidAudience = Configuration["Tokens:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]))
+                };
+            });
+
+
 
             services.ConfigureApplicationCookie(options =>
             {

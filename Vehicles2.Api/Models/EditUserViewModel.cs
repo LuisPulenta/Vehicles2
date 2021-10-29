@@ -47,8 +47,8 @@ namespace Vehicles2.Api.Models
 
         [Display(Name = "Foto")]
         public string ImageFullPath => string.IsNullOrEmpty(ImageId)
-             ? "https://localhost:44351/images/nouser.png"
-            : $"https://localhost:44351{ImageId.Substring(1)}";
+            ? $"http://keypress.serveftp.net:88/Vehicles2Api/images/nouser.png"
+            : $"http://keypress.serveftp.net:88/Vehicles2Api{ImageId.Substring(1)}";
 
         [Display(Name = "Foto")]
         public IFormFile ImageFile { get; set; }

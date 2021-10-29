@@ -38,10 +38,11 @@ namespace Vehicles2.Api.Data.Entities
         //TODO: Corregir ruta
         [Display(Name = "Foto")]
         public string ImageFullPath => string.IsNullOrEmpty(ImageId)
-                     ? "https://localhost:44351/images/nouser.png"
-                    : $"https://localhost:44351{ImageId.Substring(1)}";
-        //: $"http://keypress.serveftp.net:88/Vehicles2Api/Images/users/{ImageId}";
-        
+                    // ? "https://localhost:44351/images/nouser.png"
+                    //: $"https://localhost:44351{ImageId.Substring(1)}";
+            ? "http://keypress.serveftp.net:88/Vehicles2Api/Images/nouser.png"
+            : $"http://keypress.serveftp.net:88/Vehicles2Api{ImageId.Substring(1)}";
+
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }
 
