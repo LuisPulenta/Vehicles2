@@ -28,6 +28,8 @@ namespace Vehicles2.Api
 
             services.AddIdentity<User, IdentityRole>(x =>
             {
+                x.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+                x.SignIn.RequireConfirmedEmail = true;
                 x.User.RequireUniqueEmail = true;
                 x.Password.RequireDigit = false;
                 x.Password.RequiredUniqueChars = 0;
@@ -36,7 +38,8 @@ namespace Vehicles2.Api
                 x.Password.RequireUppercase = false;
                 x.Password.RequiredLength = 6;
             })
-    .AddEntityFrameworkStores<DataContext>();
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<DataContext>();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -54,6 +57,7 @@ namespace Vehicles2.Api
             services.AddScoped<IImageHelper, ImageHelper>();
             services.AddScoped<IFilesHelper, FilesHelper>();
             services.AddScoped<IConverterHelper, ConverterHelper>();
+            services.AddScoped<IMailHelper, MailHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
