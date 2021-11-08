@@ -115,7 +115,7 @@ namespace Vehicles2.Api.Controllers.Api
                 return BadRequest("La marca no existe.");
             }
 
-            User user = await _userHelper.GetUserAsync(request.UserId);
+            User user = await _userHelper.GetUserByIdAsync(request.UserId);
             if (user == null)
             {
                 return BadRequest("El usuario no existe.");
