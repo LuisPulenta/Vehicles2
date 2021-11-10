@@ -175,5 +175,26 @@ namespace Vehicles2.Api.Controllers.Api
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        // GET: api/Users/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Vehicle>> GetVehicle(int id)
+        {
+            Vehicle vehicle = await _context.Vehicles
+                .Include(x => x.VehicleType)
+                .Include(x => x.Brand)
+                .Include(x => x.VehiclePhotos)
+                .Include(x => x.Histories)
+                .ThenInclude(x => x.Details)
+                .ThenInclude(x => x.Procedure)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (vehicle == null)
+            {
+                return NotFound();
+            }
+            return vehicle;
+        }
+
     }
 }
