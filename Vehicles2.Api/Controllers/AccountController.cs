@@ -230,7 +230,7 @@ namespace Vehicles2.Api.Controllers
                 return NotFound();
             }
 
-            User user = await _userHelper.GetUserByIdAsync(new (userId));
+            User user = await _userHelper.GetUserByIdAsync(new String(userId));
             if (user == null)
             {
                 return NotFound();
