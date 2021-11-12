@@ -25,11 +25,6 @@ namespace Vehicles2.API.Controllers.API
         private readonly IMailHelper _mailHelper;
         private readonly IImageHelper _imageHelper;
 
-        public AccountController(IImageHelper imageHelper)
-        {
-            _imageHelper = imageHelper;
-        }
-
         public AccountController(IUserHelper userHelper, IConfiguration configuration, DataContext context, IMailHelper mailHelper, IImageHelper imageHelper)
         {
             _userHelper = userHelper;
