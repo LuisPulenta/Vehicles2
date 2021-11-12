@@ -6,9 +6,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Vehicles2.Api.Data;
 using Vehicles2.Api.Data.Entities;
 using Vehicles2.Api.Helpers;
 using Vehicles2.Api.Models;
+using Vehicles2.API.Models.Request;
+using Vehicles2.Common.Enums;
 
 namespace Vehicles2.API.Controllers.API
 {
@@ -18,11 +21,22 @@ namespace Vehicles2.API.Controllers.API
     {
         private readonly IUserHelper _userHelper;
         private readonly IConfiguration _configuration;
+        private readonly DataContext _context;
+        private readonly IMailHelper _mailHelper;
+        private readonly IImageHelper _imageHelper;
 
-        public AccountController(IUserHelper userHelper, IConfiguration configuration)
+        public AccountController(IImageHelper imageHelper)
+        {
+            _imageHelper = imageHelper;
+        }
+
+        public AccountController(IUserHelper userHelper, IConfiguration configuration, DataContext context, IMailHelper mailHelper, IImageHelper imageHelper)
         {
             _userHelper = userHelper;
             _configuration = configuration;
+            _context = context;
+            _mailHelper = mailHelper;
+            _imageHelper = imageHelper;
         }
 
         [HttpPost]
@@ -66,5 +80,64 @@ namespace Vehicles2.API.Controllers.API
 
             return BadRequest();
         }
+
+        [HttpPost]
+        public async Task<ActionResult<User>> PostUser(RegisterRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            DocumentType documentType = await _context.DocumentTypes.FindAsync(request.DocumentTypeId);
+            if (documentType == null)
+            {
+                return BadRequest("El tipo de documento no existe.");
+            }
+
+            User user = await _userHelper.GetUserAsync(request.Email);
+            if (user != null)
+            {
+                return BadRequest("Ya existe un usuario registrado con  ese email.");
+            }
+
+            string imageId = string.Empty;
+
+            if (request.Image != null && request.Image.Length > 0)
+            {
+                imageId = _imageHelper.UploadImage(request.Image, "users");
+            }
+
+            user = new User
+            {
+                Address = request.Address,
+                Document = request.Document,
+                DocumentType = documentType,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                ImageId = imageId,
+                LastName = request.LastName,
+                PhoneNumber = request.PhoneNumber,
+                UserName = request.Email,
+                UserType = UserType.User,
+            };
+
+            await _userHelper.AddUserAsync(user, request.Password);
+            await _userHelper.AddUserToRoleAsync(user, user.UserType.ToString());
+
+            string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+            string tokenLink = Url.Action("ConfirmEmail", "Account", new
+            {
+                userid = user.Id,
+                token = myToken
+            }, protocol: HttpContext.Request.Scheme);
+
+            _mailHelper.SendMail(user.Email, "Vehicles - Confirmación de cuenta", $"<h1>Vehicles - Confirmación de cuenta</h1>" +
+                $"Para habilitar el usuario, " +
+                $"por favor hacer clic en el siguiente enlace: </br></br><a href = \"{tokenLink}\">Confirmar Email</a>");
+
+            return Ok(user);
+        }
+
     }
 }

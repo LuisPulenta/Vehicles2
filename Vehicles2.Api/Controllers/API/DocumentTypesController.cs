@@ -25,6 +25,7 @@ namespace Vehicles2.Api.Controllers.API
         }
 
         // GET: api/DocumentTypes
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DocumentType>>> GetDocumentTypes()
         {
