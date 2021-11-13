@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -134,5 +138,60 @@ namespace Vehicles2.API.Controllers.API
             return Ok(user);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost]
+        [Route("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                User user = await _userHelper.GetUserAsync(email);
+                if (user != null)
+                {
+                    IdentityResult result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        return NoContent();
+                    }
+                    else
+                    {
+                        return BadRequest(result.Errors.FirstOrDefault().Description);
+                    }
+                }
+                else
+                {
+                    return BadRequest("Usuario no encontrado.");
+                }
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost]
+        [Route("RecoverPassword")]
+        public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _userHelper.GetUserAsync(model.Email);
+                if (user == null)
+                {
+                    return BadRequest("El correo ingresado no corresponde a ningún usuario.");
+                }
+
+                string myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+                string link = Url.Action(
+                    "ResetPassword",
+                    "Account",
+                    new { token = myToken }, protocol: HttpContext.Request.Scheme);
+                _mailHelper.SendMail(model.Email, "Vehicles - Reseteo de contraseña", $"<h1>Vehicles - Reseteo de contraseña</h1>" +
+                    $"Para establecer una nueva contraseña haga clic en el siguiente enlace:</br></br>" +
+                    $"<a href = \"{link}\">Cambio de Contraseña</a>");
+                return Ok("Las instrucciones para el cambio de contraseña han sido enviadas a su email.");
+            }
+
+            return BadRequest(model);
+        }
     }
 }
