@@ -682,6 +682,119 @@ namespace Vehicles.Api.Controllers
             return RedirectToAction(nameof(DetailsHistory), new { id = detail.History.Id });
         }
 
+        //********** MECANICOS Index **********
+        public async Task<IActionResult> Index2()
+        {
+            return View(await _context.Users
+                .Include(x => x.DocumentType)
+                .Include(x => x.Vehicles)
+                .Where(x => x.UserType == UserType.Admin)
+                .ToListAsync());
+        }
+
+        //********** MECANICOS Crear **********
+        public IActionResult Create2()
+        {
+            UserViewModel model = new UserViewModel
+            {
+                DocumentTypes = _combosHelper.GetComboDocumentTypes()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create2(UserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                string imageId = string.Empty;
+
+                if (model.ImageFile != null)
+                {
+                    imageId = await _imageHelper.UploadImageAsync(model.ImageFile, "users");
+                }
+
+                User user = await _converterHelper.ToUserAsync(model, imageId, true);
+                user.UserType = UserType.Admin;
+                await _userHelper.AddUserAsync(user, "123456");
+                await _userHelper.AddUserToRoleAsync(user, user.UserType.ToString());
+
+                string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                string tokenLink = Url.Action("ConfirmEmail", "Account", new
+                {
+                    userid = user.Id,
+                    token = myToken
+                }, protocol: HttpContext.Request.Scheme);
+
+                Response response = _mailHelper.SendMail(model.Email, "Vehicles - Confirmación de cuenta", $"<h1>Vehicles - Confirmación de cuenta</h1>" +
+                    $"Para habilitar el usuario, " +
+                    $"por favor hacer clic en el siguiente enlace: </br></br><a href = \"{tokenLink}\">Confirmar Email</a>");
+
+                return RedirectToAction(nameof(Index2));
+            }
+
+            model.DocumentTypes = _combosHelper.GetComboDocumentTypes();
+            return View(model);
+        }
+
+        //********** MECANICOS Editar **********
+        public async Task<IActionResult> Edit2(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            User user = await _userHelper.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            UserViewModel model = _converterHelper.ToUserViewModel(user);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit2(UserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                string imageId = model.ImageId;
+                if (model.ImageFile != null)
+                {
+                    imageId = await _imageHelper.UploadImageAsync(model.ImageFile, "users");
+                }
+
+                User user = await _converterHelper.ToUserAsync(model, imageId, false);
+                await _userHelper.UpdateUserAsync(user);
+                return RedirectToAction(nameof(Index2));
+            }
+
+            model.DocumentTypes = _combosHelper.GetComboDocumentTypes();
+            return View(model);
+        }
+
+        //********** MECANICOS Borrar **********
+        public async Task<IActionResult> Delete2(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            User user = await _userHelper.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            await _userHelper.DeleteUserAsync(user);
+            return RedirectToAction(nameof(Index2));
+        }
+
 
     }
 }
