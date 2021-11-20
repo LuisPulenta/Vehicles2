@@ -14,7 +14,7 @@ using Vehicles2.Common.Models;
 
 namespace Vehicles.Api.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,User")]
     public class UsersController : Controller
     {
         private readonly DataContext _context;
@@ -23,6 +23,19 @@ namespace Vehicles.Api.Controllers
         private readonly IConverterHelper _converterHelper;
         private readonly IImageHelper _imageHelper;
         private readonly IMailHelper _mailHelper;
+
+        //********** VEHICULOS del Usuario logueado **********
+        public async Task<IActionResult> MyVehicles()
+        {
+            User user = await _userHelper.GetUserAsync(User.Identity.Name);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = user.Id });
+        }
+
 
         public UsersController(DataContext context, IUserHelper userHelper, ICombosHelper combosHelper, IConverterHelper converterHelper, IImageHelper imageHelper, IMailHelper mailHelper)
         {
